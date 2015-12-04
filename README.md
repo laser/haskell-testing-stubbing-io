@@ -15,6 +15,19 @@ The program must do the following:
 * print the aforementioned greeting (i.e. "hello martha") to the console
 * print the number of milliseconds it took to complete steps 1-4 to the console
 
+## Required Tooling
+
+All examples rely on [Stack](https://github.com/commercialhaskell/stack) by FP
+Complete. On a Mac, one can install Stack using Homebrew:
+
+```
+brew update
+brew install haskell-stack
+```
+
+To build, install, and run the examples, look for `run.sh` and `test.sh` in the
+root of each example-folder.
+
 ## Examples
 
 * ([complete](https://github.com/laser/haskell-testing-stubbing-io/tree/master/type-class)) using a type class
