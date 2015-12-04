@@ -17,6 +17,6 @@ The program must do the following:
 
 ## Examples
 
-* (complete) using a type class
+* ([complete](https://github.com/laser/haskell-testing-stubbing-io/tree/master/type-class)) using a type class
 * using a data type
 * using free monads
