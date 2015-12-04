@@ -20,3 +20,8 @@ The program must do the following:
 * ([complete](https://github.com/laser/haskell-testing-stubbing-io/tree/master/type-class)) using a type class
 * using a data type
 * using free monads
+
+## References
+
+* [Testing functions in Haskell that do IO](http://stackoverflow.com/a/7374754)
+* [5 Ways to Test Applications that Access a Database in Haskell](http://functor.tokyo/blog/2015-11-20-testing-db-access)
