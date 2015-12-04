@@ -11,12 +11,12 @@ import           Hello               (TheOutsideWorld (..), app)
 
 data FakeFile = FakeFile { contents :: String } deriving (Eq, Show)
 
-data Stubs = Stubs { readFileResult :: FakeFile
-                   , timerResult    :: Double
-                   , cmdLineArgs    :: [String]
-                   , consoleWrites  :: [String] } deriving (Eq, Show)
+data TestState = TestState { readFileResult :: FakeFile
+                           , timerResult    :: Double
+                           , cmdLineArgs    :: [String]
+                           , consoleWrites  :: [String] } deriving (Eq, Show)
 
-instance TheOutsideWorld (State Stubs) where
+instance TheOutsideWorld (State TestState) where
 
   -- a file-reading stub that's always successful
   readFile pathRequested = gets readFileResult >>= return . contents
@@ -31,16 +31,16 @@ instance TheOutsideWorld (State Stubs) where
   getArgs = gets cmdLineArgs
 
   -- capture output to State
-  emit s = modify $ \bindings ->
-    bindings { consoleWrites = consoleWrites bindings ++ [s] }
+  emit arg = modify $ \state ->
+    state { consoleWrites = consoleWrites state ++ [arg] }
 
 spec :: Spec
 spec = do
-  let stubs = Stubs { readFileResult = FakeFile "Rupert"
-                    , timerResult = 15.0
-                    , cmdLineArgs = ["config.txt"]
-                    , consoleWrites = [] }
+  let state = TestState { readFileResult = FakeFile "Rupert"
+                        , timerResult = 15.0
+                        , cmdLineArgs = ["config.txt"]
+                        , consoleWrites = [] }
 
   describe "app" $
     it "provides an example of testing against a stubbed interface in Haskell" $
-      consoleWrites (execState app stubs) `shouldBe` ["hello, Rupert", "It took: 15.0"]
+      consoleWrites (execState app state) `shouldBe` ["hello, Rupert", "It took: 15.0"]
