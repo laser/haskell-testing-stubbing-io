@@ -1,12 +1,16 @@
 {-# LANGUAGE FlexibleInstances    #-}
 {-# LANGUAGE TypeSynonymInstances #-}
 
-module HelloSpec (spec, app) where
+module HelloSpec (
+  spec,
+  app
+) where
 
 import           Control.Monad.State (State, execState, gets, modify)
 import           Prelude             hiding (readFile)
 import           Test.Hspec          (Spec, describe, it, shouldBe)
 
+import           Configuration       (Configuration (..))
 import           Hello               (TheOutsideWorld (..), app)
 
 data FakeFile = FakeFile { contents :: String } deriving (Eq, Show)
@@ -17,9 +21,6 @@ data TestState = TestState { readFileResult :: FakeFile
                            , consoleWrites  :: [String] } deriving (Eq, Show)
 
 instance TheOutsideWorld (State TestState) where
-
-  -- a file-reading stub that's always successful
-  readFile pathRequested = gets readFileResult >>= return . contents
 
   -- times a computation, providing a tuple of duration, result
   time op = do
@@ -33,6 +34,11 @@ instance TheOutsideWorld (State TestState) where
   -- capture output to State
   emit arg = modify $ \state ->
     state { consoleWrites = consoleWrites state ++ [arg] }
+
+instance Configuration (State TestState) where
+
+  -- a file-reading stub that's always successful
+  readFile _ = gets readFileResult >>= return . contents
 
 spec :: Spec
 spec = do
