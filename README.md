@@ -3,7 +3,7 @@
 The code in this repository's purpose is to demonstrate how one might test an
 IO-heavy Haskell application w/out resorting to side-effectful operations.
 
-This project was inspired by Sean Subin's [hello](https://github.com/SeanShubin/hello).
+This project was inspired by Sean Shubin's [hello](https://github.com/SeanShubin/hello).
 
 ## Program Description
 
