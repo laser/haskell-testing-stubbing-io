@@ -1,5 +1,5 @@
-module Hello (
-  app
+module Application (
+  run
 ) where
 
 import           Configuration   (getTarget)
@@ -7,8 +7,8 @@ import           Greeting        (greet)
 import           Report          (timeTaken)
 import           TheOutsideWorld (TheOutsideWorld (..))
 
-app :: TheOutsideWorld m => m ()
-app = do
+run :: TheOutsideWorld m => m ()
+run = do
   (duration,_) <- measureTime $ do
     (path:_) <- getArgs
     target <- getTarget path

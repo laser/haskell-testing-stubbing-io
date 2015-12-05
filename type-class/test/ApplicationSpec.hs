@@ -1,16 +1,16 @@
 {-# LANGUAGE FlexibleInstances    #-}
 {-# LANGUAGE TypeSynonymInstances #-}
 
-module HelloSpec (
+module ApplicationSpec (
   spec,
-  app
+  run
 ) where
 
 import           Control.Monad.State (State, execState, gets, modify)
 import           Prelude             hiding (readFile)
 import           Test.Hspec          (Spec, describe, it, shouldBe)
 
-import           Hello               (app)
+import           Application         (run)
 import           TheOutsideWorld     (TheOutsideWorld(..))
 
 data FakeFile = FakeFile { contents :: String } deriving (Eq, Show)
@@ -45,6 +45,6 @@ spec = do
                        , cmdLineArgs = ["config.txt"]
                        , consoleWrites = [] }
 
-  describe "app" $
+  describe "run" $
     it "provides an example of testing against a stubbed interface in Haskell" $
-      consoleWrites (execState app state) `shouldBe` ["Hello, Rupert!", "1503.00000 milliseconds"]
+      consoleWrites (execState run state) `shouldBe` ["Hello, Rupert!", "1503.00000 milliseconds"]

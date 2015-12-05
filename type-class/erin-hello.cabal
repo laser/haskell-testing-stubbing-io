@@ -15,7 +15,7 @@ cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Hello
+  exposed-modules:     Application
                      , Configuration
                      , Greeting
                      , Report
