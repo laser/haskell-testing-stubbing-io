@@ -17,6 +17,7 @@ library
   hs-source-dirs:      src
   exposed-modules:     Hello
                      , Configuration
+                     , TheOutsideWorld
   build-depends:       base >= 4.7 && < 5
                      , timeit
   default-language:    Haskell2010

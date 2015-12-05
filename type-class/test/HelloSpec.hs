@@ -10,8 +10,9 @@ import           Control.Monad.State (State, execState, gets, modify)
 import           Prelude             hiding (readFile)
 import           Test.Hspec          (Spec, describe, it, shouldBe)
 
-import           Configuration       (Configuration (..))
-import           Hello               (TheOutsideWorld (..), app)
+import           Configuration       (Configuration(..))
+import           Hello               (app)
+import           TheOutsideWorld     (TheOutsideWorld(..))
 
 data FakeFile = FakeFile { contents :: String } deriving (Eq, Show)
 
