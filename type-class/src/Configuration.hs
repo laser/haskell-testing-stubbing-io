@@ -1,16 +1,9 @@
 module Configuration (
-  Configuration(..),
   getTarget
 ) where
 
-import           Prelude hiding (readFile)
-import qualified Prelude
+import           Prelude         hiding (readFile)
+import           TheOutsideWorld (TheOutsideWorld (..))
 
-class Monad m => Configuration m where
-  readFile :: FilePath -> m String
-
-instance Configuration IO where
-  readFile = Prelude.readFile
-
-getTarget :: Configuration m => FilePath -> m String
+getTarget :: TheOutsideWorld m => FilePath -> m String
 getTarget = readFile

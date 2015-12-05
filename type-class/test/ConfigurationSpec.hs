@@ -1,5 +1,4 @@
 {-# LANGUAGE FlexibleInstances    #-}
-{-# LANGUAGE TypeSynonymInstances #-}
 
 module ConfigurationSpec (
   spec
@@ -9,17 +8,16 @@ import           Control.Monad.Reader (Reader, asks, runReader)
 import           Prelude              hiding (readFile)
 import           Test.Hspec           (Spec, describe, it, shouldBe)
 
-import           Configuration        (Configuration (..), getTarget)
+import           Configuration        (getTarget)
+import           TheOutsideWorld      (TheOutsideWorld(..))
 
-data FakeFile = FakeFile { contents :: String } deriving (Eq, Show)
+newtype FileContents = FileContents { unFileContents :: String }
 
-instance Configuration (Reader FakeFile) where
-
-  -- a file-reading stub that's always successful
-  readFile _ = asks contents
+instance TheOutsideWorld (Reader FileContents) where
+  readFile _ = asks unFileContents
 
 spec :: Spec
 spec = do
   describe "getTarget" $
-    it "provides an example of testing against a stubbed interface in Haskell" $
-      runReader (getTarget "config.txt") (FakeFile "Rupert") `shouldBe` "Rupert"
+    it "delegates to readFile" $
+      runReader (getTarget "config.txt") (FileContents "Rupert") `shouldBe` "Rupert"

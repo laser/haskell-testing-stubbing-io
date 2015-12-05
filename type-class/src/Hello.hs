@@ -2,18 +2,15 @@ module Hello (
   app
 ) where
 
-import           System.IO          hiding (putStrLn)
+import           Configuration   (getTarget)
+import           Greeting        (greet)
+import           Report          (timeTaken)
+import           TheOutsideWorld (TheOutsideWorld (..))
 
-import           Configuration      (Configuration(..), getTarget)
-import           TheOutsideWorld    (TheOutsideWorld(..))
-
-makeGreeting :: String -> String
-makeGreeting = (++) "hello, "
-
-app :: (TheOutsideWorld m, Configuration m) => m ()
+app :: TheOutsideWorld m => m ()
 app = do
-  (duration,_) <- time $ do
+  (duration,_) <- measureTime $ do
     (path:_) <- getArgs
     target <- getTarget path
-    emit (makeGreeting target)
-  emit ("It took: " ++ show duration)
+    greet target
+  timeTaken duration
