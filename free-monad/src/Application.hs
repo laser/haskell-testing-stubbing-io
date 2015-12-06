@@ -7,17 +7,21 @@ import           Prelude            hiding (putStrLn, readFile)
 import qualified System.Environment (getArgs)
 import qualified Prelude            (putStrLn, readFile)
 import qualified System.Exit        (exitSuccess)
+import qualified System.TimeIt      (timeItT)
+import qualified Text.Printf        (printf)
 
 data ActionF a
   = PutStrLn String a
   | GetArgs ([String] -> a)
   | ReadFile FilePath (String -> a)
+  -- | MeasureTime (ActionF a) (ActionF (Double, a) -> a)
   | ExitSuccess
 
 instance Functor ActionF where
   fmap f (PutStrLn str x) = PutStrLn str (f x)
   fmap f (GetArgs k) = GetArgs (f . k)
   fmap f (ReadFile path k) = ReadFile path (f . k)
+  -- fmap f (MeasureTime op k) = MeasureTime (fmap f op) (f . k)
   fmap _ ExitSuccess = ExitSuccess
 
 type Action = Free ActionF
@@ -34,19 +38,28 @@ readFile path = liftF $ ReadFile path id
 exitSuccess :: Action a
 exitSuccess = liftF ExitSuccess
 
+timeItT :: Action a -> Action (Double, a)
+timeItT = undefined
+
 interpretIO :: Action a -> IO a
 interpretIO (Pure x)                   = return x
 interpretIO (Free (PutStrLn str next)) = Prelude.putStrLn str       >>  interpretIO next
 interpretIO (Free (GetArgs f))         = System.Environment.getArgs >>= interpretIO . f
 interpretIO (Free (ReadFile path f))   = Prelude.readFile path      >>= interpretIO . f
+-- interpretIO (Free (MeasureTime op f))  = System.TimeIt.timeItT op   >>= interpretIO . f
 interpretIO (Free ExitSuccess)         = System.Exit.exitSuccess
+
+makeReport :: Double -> String
+makeReport = flip (++) " milliseconds" . Text.Printf.printf "%.5F"
 
 program :: Action ()
 program = do
-  (a:_) <- getArgs
-  putStrLn ("Got " ++ a ++ " as an argument...")
-  contents <- readFile a
-  putStrLn ("File contents: " ++ contents)
+  (duration,_) <- timeItT $ do
+    (arg:_) <- getArgs
+    putStrLn ("Got " ++ arg ++ " as an argument...")
+    contents <- readFile arg
+    putStrLn ("File contents: " ++ contents)
+  putStrLn (makeReport duration)
   exitSuccess
 
 run :: IO ()
