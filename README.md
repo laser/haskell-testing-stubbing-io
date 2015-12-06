@@ -32,7 +32,7 @@ root of each example-folder.
 
 * ([complete](https://github.com/laser/haskell-testing-stubbing-io/tree/master/type-class)) using a type class
 * using a data type
-* using free monads
+* ([in progress](https://github.com/laser/haskell-testing-stubbing-io/tree/master/free-monad)) using a free monad
 
 ## References
 
