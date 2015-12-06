@@ -10,6 +10,19 @@ import qualified System.Exit        (exitSuccess)
 import qualified System.TimeIt      (timeItT)
 import qualified Text.Printf        (printf)
 
+
+{-
+
+OPEN QUESTIONS
+==============
+
+How do I create an `ActionF` constructor that could be used to represent the
+`timeItT` function (which has type `IO a -> IO (Double, a)`)?
+
+What would fmap look like for that constructor?
+
+-}
+
 data ActionF a
   = PutStrLn String a
   | GetArgs ([String] -> a)
