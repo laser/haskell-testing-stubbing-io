@@ -1,52 +1,61 @@
+{-# LANGUAGE GADTs #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+
 module Application (
+  Action(..),
+  HelloProgram,
+  program, 
   run
 ) where
 
-import           Control.Monad.Free
+import           Control.Monad.Operational
 import           Prelude            hiding (putStrLn, readFile)
 import qualified System.Environment (getArgs)
 import qualified Prelude            (putStrLn, readFile)
 import qualified System.Exit        (exitSuccess)
+import qualified System.TimeIt      (timeItT)
 
-data ActionF a
-  = PutStrLn String a
-  | GetArgs ([String] -> a)
-  | ReadFile FilePath (String -> a)
-  | ExitSuccess
+data Action a where
+  ExitSuccess :: Action ()
+  GetArgs :: Action [String]
+  PutStrLn :: String -> Action ()
+  ReadFile :: String -> Action String
+  TimeItT :: HelloProgram a -> Action (Double, a)
 
-instance Functor ActionF where
-  fmap f (PutStrLn str x) = PutStrLn str (f x)
-  fmap f (GetArgs k) = GetArgs (f . k)
-  fmap f (ReadFile path k) = ReadFile path (f . k)
-  fmap _ ExitSuccess = ExitSuccess
+type HelloProgram a = Program Action a
 
-type Action = Free ActionF
+getArgs :: HelloProgram [String]
+getArgs = singleton GetArgs
 
-putStrLn :: String -> Action ()
-putStrLn str = liftF $ PutStrLn str ()
+putStrLn :: String -> HelloProgram ()
+putStrLn = singleton . PutStrLn
 
-getArgs :: Action [String]
-getArgs = liftF $ GetArgs id
+readFile :: String -> HelloProgram String
+readFile = singleton . ReadFile
 
-readFile :: FilePath -> Action String
-readFile path = liftF $ ReadFile path id
+timeItT :: HelloProgram a -> HelloProgram (Double, a)
+timeItT = singleton . TimeItT
 
-exitSuccess :: Action a
-exitSuccess = liftF ExitSuccess
+exitSuccess :: HelloProgram ()
+exitSuccess = singleton ExitSuccess
 
-interpretIO :: Action a -> IO a
-interpretIO (Pure x)                   = return x
-interpretIO (Free (PutStrLn str next)) = Prelude.putStrLn str       >>  interpretIO next
-interpretIO (Free (GetArgs f))         = System.Environment.getArgs >>= interpretIO . f
-interpretIO (Free (ReadFile path f))   = Prelude.readFile path      >>= interpretIO . f
-interpretIO (Free ExitSuccess)         = System.Exit.exitSuccess
+interpretIO :: HelloProgram a -> IO a
+interpretIO = interpretWithMonad go
+  where 
+    go :: forall a. Action a -> IO a
+    go (GetArgs) = System.Environment.getArgs
+    go (ReadFile str) = Prelude.readFile str
+    go (PutStrLn str) = Prelude.putStrLn str
+    go (ExitSuccess) = System.Exit.exitSuccess
+    go (TimeItT program') = System.TimeIt.timeItT $ interpretIO program'
 
-program :: Action ()
+program :: HelloProgram ()
 program = do
-  (a:_) <- getArgs
-  putStrLn ("Got " ++ a ++ " as an argument...")
-  contents <- readFile a
-  putStrLn ("File contents: " ++ contents)
+  (duration,_) <- timeItT $ do
+    (path:_) <- getArgs
+    target <- readFile path
+    putStrLn ("target: " ++ target)
+  putStrLn ("duration: " ++ (show duration))
   exitSuccess
 
 run :: IO ()
