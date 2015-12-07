@@ -20,18 +20,13 @@ data TestData = TestData { readFileResult :: FakeFile
 
 interpretState :: HelloProgram a -> State TestData a
 interpretState program = interpretWithMonad go program
-  where 
-    go :: forall a. Action a -> State TestData a    
-    
+  where
+    go :: forall a. Action a -> State TestData a
     go (ExitSuccess) = modify id
-    
     go (GetArgs) = gets cmdLineArgs
-    
-    go (ReadFile str) = gets readFileResult >>= return . contents
-
     go (PutStrLn str) = modify $ \state ->
       state { consoleWrites = consoleWrites state ++ [str] }
-    
+    go (ReadFile str) = gets readFileResult >>= return . contents
     go (TimeItT program') = do
       duration <- gets timerResult
       result   <- interpretState program'
