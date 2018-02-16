@@ -39,3 +39,4 @@ root of each example-folder.
 * [Testing functions in Haskell that do IO](http://stackoverflow.com/a/7374754)
 * [5 Ways to Test Applications that Access a Database in Haskell](http://functor.tokyo/blog/2015-11-20-testing-db-access)
 * [Purify code using free monads](http://www.haskellforall.com/2012/07/purify-code-using-free-monads.html)
+
